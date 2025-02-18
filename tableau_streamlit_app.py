@@ -46,18 +46,29 @@ load_dotenv()
 
 # Email settings from environment variables
 SMTP_SERVER = os.getenv('SMTP_SERVER')
-SMTP_PORT = int(os.getenv('SMTP_PORT', '587'))
+SMTP_PORT = os.getenv('SMTP_PORT')
 SENDER_EMAIL = os.getenv('SENDER_EMAIL')
 SENDER_PASSWORD = os.getenv('SENDER_PASSWORD')
 
-if not all([SMTP_SERVER, SMTP_PORT, SENDER_EMAIL, SENDER_PASSWORD]):
-    st.error("""
-    ⚠️ Email settings are not properly configured. Please check your .env file and ensure the following variables are set:
-    - SMTP_SERVER
-    - SMTP_PORT
-    - SENDER_EMAIL
-    - SENDER_PASSWORD
+# Only show error if any of the required email settings are actually missing
+missing_settings = []
+if not SMTP_SERVER:
+    missing_settings.append("SMTP_SERVER")
+if not SMTP_PORT:
+    missing_settings.append("SMTP_PORT")
+if not SENDER_EMAIL:
+    missing_settings.append("SENDER_EMAIL")
+if not SENDER_PASSWORD:
+    missing_settings.append("SENDER_PASSWORD")
+
+if missing_settings:
+    st.error(f"""
+    ⚠️ Some email settings are not properly configured. Please check your .env file and ensure the following variables are set:
+    {chr(10).join(['- ' + setting for setting in missing_settings])}
     """)
+else:
+    # Convert SMTP_PORT to integer only if it exists
+    SMTP_PORT = int(SMTP_PORT)
 
 def get_session():
     """Get the current session state"""
