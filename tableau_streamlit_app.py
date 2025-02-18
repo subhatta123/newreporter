@@ -18,6 +18,14 @@ import tableauserverclient as TSC
 import plotly.graph_objects as go
 from streamlit.runtime.scriptrunner import get_script_run_ctx
 
+# Set page config at the very beginning
+st.set_page_config(
+    page_title="Tableau Data Reporter",
+    page_icon="📊",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
 # Local imports
 from user_management import UserManagement
 import sys
@@ -1617,13 +1625,6 @@ def show_qa_page():
 
 def main():
     """Main function to run the Streamlit application"""
-    st.set_page_config(
-        page_title="Tableau Data Reporter",
-        page_icon="📊",
-        layout="wide",
-        initial_sidebar_state="expanded"
-    )
-    
     # Initialize session state if needed
     init_session_state()
     
