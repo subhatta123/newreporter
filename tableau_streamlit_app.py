@@ -50,25 +50,39 @@ SMTP_PORT = os.getenv('SMTP_PORT')
 SENDER_EMAIL = os.getenv('SENDER_EMAIL')
 SENDER_PASSWORD = os.getenv('SENDER_PASSWORD')
 
+# Debug print to check what values are being loaded
+print(f"Loaded email settings:")
+print(f"SMTP_SERVER: {SMTP_SERVER}")
+print(f"SMTP_PORT: {SMTP_PORT}")
+print(f"SENDER_EMAIL: {SENDER_EMAIL}")
+print(f"SENDER_PASSWORD: {'Set' if SENDER_PASSWORD else 'Not set'}")
+
 # Only show error if any of the required email settings are actually missing
 missing_settings = []
-if not SMTP_SERVER:
+if not SMTP_SERVER or SMTP_SERVER.strip() == '':
     missing_settings.append("SMTP_SERVER")
-if not SMTP_PORT:
+if not SMTP_PORT or SMTP_PORT.strip() == '':
     missing_settings.append("SMTP_PORT")
-if not SENDER_EMAIL:
+if not SENDER_EMAIL or SENDER_EMAIL.strip() == '':
     missing_settings.append("SENDER_EMAIL")
-if not SENDER_PASSWORD:
+if not SENDER_PASSWORD or SENDER_PASSWORD.strip() == '':
     missing_settings.append("SENDER_PASSWORD")
 
 if missing_settings:
-    st.error(f"""
-    ⚠️ Some email settings are not properly configured. Please check your .env file and ensure the following variables are set:
+    st.warning(f"""
+    ⚠️ Some email settings are not properly configured. Please check your Streamlit Cloud Secrets and ensure the following variables are set:
     {chr(10).join(['- ' + setting for setting in missing_settings])}
+    
+    These settings should be configured in your Streamlit Cloud dashboard under Settings > Secrets.
     """)
 else:
-    # Convert SMTP_PORT to integer only if it exists
-    SMTP_PORT = int(SMTP_PORT)
+    try:
+        # Convert SMTP_PORT to integer only if it exists and is valid
+        SMTP_PORT = int(SMTP_PORT)
+        print(f"Successfully converted SMTP_PORT to integer: {SMTP_PORT}")
+    except ValueError as e:
+        st.error(f"Invalid SMTP_PORT value: {SMTP_PORT}. Please ensure it is a valid number.")
+        print(f"Error converting SMTP_PORT: {str(e)}")
 
 def get_session():
     """Get the current session state"""
